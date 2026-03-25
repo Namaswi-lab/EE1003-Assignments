@@ -1,0 +1,159 @@
+\documentclass{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\title{Discrete-1.2.60\\Local Error of Numerical Scheme}
+\author{NAMASWI V-EE25BTECH11060}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{Question}
+The local error of the scheme
+\[
+y_{n+1} = y_n + \frac{h}{12}\left(5y_{n+1} + 8y_n - y_{n-1}\right)
+\]
+
+\begin{columns}[t]
+    \begin{column}{0.45\textwidth}
+        \begin{enumerate}[a)]
+            \item $O(h)$
+            \item $O(h^2)$
+        \end{enumerate}
+    \end{column}
+    
+    \begin{column}{0.45\textwidth}
+        \begin{enumerate}[a)]
+            \setcounter{enumi}{2}
+            \item $O(h^3)$
+            \item $O(h^4)$
+        \end{enumerate}
+    \end{column}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{What is Local Error?}
+
+Local truncation error measures how much a numerical scheme deviates from the exact Taylor expansion in \textbf{one step}.
+
+\vspace{0.3cm}
+
+Idea:
+\begin{itemize}
+    \item Expand exact solution using Taylor series
+    \item Expand numerical scheme
+    \item Compare both
+\end{itemize}
+
+The first mismatching term $\Rightarrow$ order of local error.
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{Taylor Expansion Idea}
+
+We expand around $x_n$ using Taylor series:
+
+\begin{equation}
+y_{n+1} = y(x_n + h)
+\end{equation}
+
+\begin{equation}
+y_{n-1} = y(x_n - h)
+\end{equation}
+
+Using Taylor series:
+\[
+y(x+h) = y + h y' + \frac{h^2}{2}y'' + \frac{h^3}{6}y''' + \cdots
+\]
+
+\[
+y(x-h) = y - h y' + \frac{h^2}{2}y'' - \frac{h^3}{6}y''' + \cdots
+\]
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{Taylor Expansions}
+
+\begin{equation}
+y_{n+1} = y_n + h y'_n + \frac{h^2}{2}y''_n + \frac{h^3}{6}y'''_n + O(h^4)
+\end{equation}
+
+\begin{equation}
+y_{n-1} = y_n - h y'_n + \frac{h^2}{2}y''_n - \frac{h^3}{6}y'''_n + O(h^4)
+\end{equation}
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{Substitution in Scheme}
+
+\begin{equation}
+y_{n+1} = y_n + \frac{h}{12}\left(5y_{n+1} + 8y_n - y_{n-1}\right)
+\end{equation}
+
+Substitute (3) and (4):
+
+\begin{equation}
+\begin{aligned}
+y_{n+1} = y_n + \frac{h}{12} \Big[
+&5\left(y_n + h y'_n + \frac{h^2}{2}y''_n + \frac{h^3}{6}y'''_n\right) \\
+&+ 8y_n \\
+&- \left(y_n - h y'_n + \frac{h^2}{2}y''_n - \frac{h^3}{6}y'''_n\right)
+\Big]
+\end{aligned}
+\end{equation}
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{Simplification}
+
+\begin{equation}
+= y_n + \frac{h}{12}\left(12y_n + 6h y'_n + 2h^2 y''_n + h^3 y'''_n \right)
+\end{equation}
+
+\begin{equation}
+= y_n + h y'_n + \frac{h^2}{2}y''_n + \frac{h^3}{6}y'''_n + O(h^4)
+\end{equation}
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{Conclusion Logic}
+
+Exact Taylor expansion:
+
+\begin{equation}
+y_{n+1} = y_n + h y'_n + \frac{h^2}{2}y''_n + \frac{h^3}{6}y'''_n + O(h^4)
+\end{equation}
+
+Numerical scheme gives same terms up to $h^3$.
+
+\vspace{0.3cm}
+
+So the first missing/different term appears at $h^4$.
+
+\begin{equation}
+\boxed{\text{Local truncation error} = O(h^4)}
+\end{equation}
+
+\end{frame}
+
+%------------------------------------------------
+
+\end{document}
