@@ -1,0 +1,14 @@
+\frametitle{Python Code: Error Plot}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 3: absolute error
+plt.figure(figsize=(6, 3.5))
+plt.semilogy(x, error, 'k-o', markersize=5, linewidth=1.8)
+plt.title(r'Error $|e^{x_n} - y_n|$  ($y_0=1,\ y_1=1.1,\ h=0.1$)')
+plt.xlabel(r'$x_n = nh$')
+plt.ylabel('Absolute Error (log scale)')
+plt.grid(True, which='both', alpha=0.4)
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+

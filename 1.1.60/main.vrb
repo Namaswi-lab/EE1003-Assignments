@@ -1,0 +1,13 @@
+\frametitle{Verification of $s = \pm j\sqrt {11}$}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+
+s = 1j * np.sqrt(11)
+
+value = (s+1)*(s+2)*(s+3)
+K = abs(value) / 6
+
+print("Calculated K =", K)
+\end{lstlisting}
+

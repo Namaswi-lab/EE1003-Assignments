@@ -1,0 +1,1079 @@
+\documentclass{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+% Python code styling
+\lstdefinestyle{pythonstyle}{
+    language=Python,
+    basicstyle=\ttfamily\scriptsize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red!70!black},
+    numberstyle=\tiny\color{gray},
+    numbers=left,
+    stepnumber=1,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4
+}
+
+\title{Discrete-1.2.60\\Local Error of Numerical Scheme}
+\author{NAMASWI V -- EE25BTECH11060}
+\date{\today}
+
+\begin{document}
+
+% ------------------------------------------------
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+% ================================================
+\section{Question \& Local Truncation Error}
+% ================================================
+
+\begin{frame}{Question}
+
+The local error of the scheme
+\begin{equation}
+    y_{n+1} = y_n + \frac{h}{12}\left(5y_{n+1} + 8y_n - y_{n-1}\right)
+\end{equation}
+
+\vspace{0.4cm}
+
+\begin{columns}[t]
+    \begin{column}{0.45\textwidth}
+        \begin{enumerate}[label=\alph*)]
+            \item $O(h)$
+            \item $O(h^2)$
+        \end{enumerate}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+        \begin{enumerate}[label=\alph*)]
+            \setcounter{enumi}{2}
+            \item $O(h^3)$
+            \item \textbf{$O(h^4)$} \quad \checkmark
+        \end{enumerate}
+    \end{column}
+\end{columns}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{What is Local Truncation Error?}
+
+Local truncation error (LTE) measures how much a numerical scheme deviates from the exact Taylor expansion in \textbf{one step}.
+
+\vspace{0.4cm}
+
+\textbf{Approach:}
+\begin{itemize}
+    \item Expand exact solution $y_{n+1}$, $y_{n-1}$ using Taylor series around $x_n$
+    \item Substitute into the numerical scheme
+    \item Compare with the exact Taylor expansion of $y_{n+1}$
+    \item First mismatching term $\Rightarrow$ \textbf{order of LTE}
+\end{itemize}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Taylor Expansions}
+
+Expanding around $x_n$ with step size $h$:
+
+\begin{equation}
+    y_{n+1} = y_n + h y'_n + \frac{h^2}{2}y''_n + \frac{h^3}{6}y'''_n + O(h^4)
+\end{equation}
+
+\begin{equation}
+    y_{n-1} = y_n - h y'_n + \frac{h^2}{2}y''_n - \frac{h^3}{6}y'''_n + O(h^4)
+\end{equation}
+
+\vspace{0.3cm}
+Equations (2) and (3) are substituted into the right-hand side of (1).
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Substitution into the Scheme}
+
+Substituting (2) and (3) into the RHS of (1):
+
+\begin{equation}
+\begin{aligned}
+    y_{n+1} &= y_n + \frac{h}{12} \Big[
+    5\!\left(y_n + h y'_n + \tfrac{h^2}{2}y''_n + \tfrac{h^3}{6}y'''_n\right) \\
+    &\quad\quad\quad\quad\;\; + 8y_n
+    - \!\left(y_n - h y'_n + \tfrac{h^2}{2}y''_n - \tfrac{h^3}{6}y'''_n\right)
+    \Big]
+\end{aligned}
+\end{equation}
+
+Collecting like terms inside the bracket:
+
+\begin{equation}
+    y_{n+1} = y_n + \frac{h}{12}\!\left(12y_n + 6h y'_n + 2h^2 y''_n + \frac{h^3}{3}y'''_n + \cdots\right)
+\end{equation}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Simplification and LTE}
+
+Dividing through by 12:
+
+\begin{equation}
+    y_{n+1} = y_n + h y'_n + \frac{h^2}{2}y''_n + \frac{h^3}{6}y'''_n + O(h^4)
+\end{equation}
+
+\vspace{0.2cm}
+\textbf{Exact Taylor expansion:}
+\begin{equation}
+    y_{n+1} = y_n + h y'_n + \frac{h^2}{2}y''_n + \frac{h^3}{6}y'''_n + O(h^4)
+\end{equation}
+
+\vspace{0.2cm}
+The scheme matches all terms up to $h^3$. The first error appears at $O(h^4)$.
+
+\begin{alertblock}{Result}
+\[
+    \text{Local Truncation Error} = O(h^4)
+    \qquad \Rightarrow \qquad \textbf{Option (d)}
+\]
+\end{alertblock}
+
+\end{frame}
+
+% ================================================
+\section{Z-Transform Analysis}
+% ================================================
+
+\begin{frame}{Rearranging the Scheme — General Form}
+
+For a general ODE $\dfrac{dy}{dx} = \lambda y$, we have $y'_n = \lambda y_n$.
+
+\vspace{0.3cm}
+The scheme (1) becomes:
+\[
+    y_{n+1} = y_n + \frac{h}{12}\!\left(5\lambda y_{n+1} + 8\lambda y_n - \lambda y_{n-1}\right)
+\]
+
+\begin{equation}
+    \left(1 - \frac{5\lambda h}{12}\right)y_{n+1} = \left(1 + \frac{8\lambda h}{12}\right)y_n - \frac{\lambda h}{12}\,y_{n-1}
+\end{equation}
+
+\vspace{0.2cm}
+Define constants:
+\begin{equation}
+    A = \frac{1 + \tfrac{8\lambda h}{12}}{1 - \tfrac{5\lambda h}{12}}, \qquad
+    B = \frac{-\tfrac{\lambda h}{12}}{1 - \tfrac{5\lambda h}{12}}
+\end{equation}
+
+So the recurrence is:
+\begin{equation}
+    y_{n+1} = A\,y_n + B\,y_{n-1}
+\end{equation}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Z-Transform Setup}
+
+Taking the Z-transform of (10). Recall:
+\[
+    \mathcal{Z}\{y_{n+1}\} = zY(z) - zy_0, \qquad
+    \mathcal{Z}\{y_{n-1}\} = \frac{Y(z)}{z}
+\]
+
+Applying to both sides of (10):
+
+\begin{equation}
+    zY(z) - zy_0 = A\,Y(z) + \frac{B}{z}\,Y(z)
+\end{equation}
+
+Collecting $Y(z)$ on the left:
+
+\begin{equation}
+    Y(z)\!\left(z - A - \frac{B}{z}\right) = z\,y_0
+\end{equation}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Z-Transform Solution}
+
+Multiplying numerator and denominator by $z$:
+
+\begin{equation}
+    \boxed{Y(z) = \frac{z^2\,y_0}{z^2 - Az - B}}
+\end{equation}
+
+The denominator gives the \textbf{characteristic equation}:
+
+\begin{equation}
+    z^2 - Az - B = 0
+\end{equation}
+
+Solving for roots $z_1, z_2$:
+
+\begin{equation}
+    z_{1,2} = \frac{A \pm \sqrt{A^2 + 4B}}{2}
+\end{equation}
+
+The general solution is:
+\begin{equation}
+    y_n = C_1\,z_1^n + C_2\,z_2^n
+\end{equation}
+
+Constants $C_1, C_2$ are found from initial conditions $y_0$ and $y_1$.
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Z-Transform: Stability Condition}
+
+\textbf{The scheme is stable} if all roots of $z^2 - Az - B = 0$ satisfy:
+\[
+    |z_i| \leq 1
+\]
+
+\vspace{0.3cm}
+\begin{itemize}
+    \item \textbf{Distinct real roots} $\Rightarrow$ $y_n = C_1 z_1^n + C_2 z_2^n$
+    \item \textbf{Complex roots} $\Rightarrow$ oscillatory form $r^n(\cos n\theta + i\sin n\theta)$
+    \item \textbf{Repeated root} $\Rightarrow$ $y_n = (C_1 + C_2 n)\,z_1^n$
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{Physical meaning:}
+If $|z_i| > 1$, numerical errors grow exponentially $\Rightarrow$ unstable scheme.
+
+\end{frame}
+
+% ================================================
+\section{Example 1: $dy/dx = y$}
+% ================================================
+
+\begin{frame}{Example 1 — Setup: $dy/dx = y$}
+
+\textbf{ODE:} $\dfrac{dy}{dx} = y, \quad y(0) = 1$
+
+\textbf{Exact Solution:} $y(x) = e^x$
+
+\vspace{0.3cm}
+Here $\lambda = 1$, so the scheme constants (from (9)) are:
+
+\begin{equation}
+    A_1 = \frac{1 + \tfrac{8h}{12}}{1 - \tfrac{5h}{12}} = \frac{1 + 8h/12}{1 - 5h/12}
+    \approx 1.1130, \qquad B_1 \approx -0.0087 \quad (h=0.1)
+\end{equation}
+
+\vspace{0.3cm}
+\textbf{Initial conditions} (chosen from exact solution):
+\[
+    y_0 = 1, \qquad y_1 = e^h
+\]
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 1 — Python Code (FD Scheme)}
+
+\begin{lstlisting}[style=pythonstyle]
+import math, matplotlib.pyplot as plt
+
+h = 0.1;  N = 20
+
+x     = [i*h for i in range(N+1)]
+y_ex  = [math.exp(xi) for xi in x]          # exact: e^x
+
+# FD scheme constants (lambda = 1)
+A = (1 + 8*h/12) / (1 - 5*h/12)
+B = (-h/12)      / (1 - 5*h/12)
+
+# initial conditions from exact solution
+y_fd = [1.0, math.exp(h)] + [0.0]*(N-1)
+
+for n in range(1, N):
+    y_fd[n+1] = A * y_fd[n] + B * y_fd[n-1]
+
+error = [abs(y_ex[i] - y_fd[i]) for i in range(N+1)]
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 1 — Python Code (RK4)}
+
+\begin{lstlisting}[style=pythonstyle]
+def f(x, y): return y          # dy/dx = y
+
+y_rk = [1.0] + [0.0]*N        # y(0) = 1
+
+for n in range(N):
+    xi, yi = x[n], y_rk[n]
+    k1 = f(xi,       yi)
+    k2 = f(xi + h/2, yi + h/2 * k1)
+    k3 = f(xi + h/2, yi + h/2 * k2)
+    k4 = f(xi + h,   yi + h   * k3)
+    y_rk[n+1] = yi + (h/6) * (k1 + 2*k2 + 2*k3 + k4)
+
+err_rk = [abs(y_ex[i] - y_rk[i]) for i in range(N+1)]
+\end{lstlisting}
+
+\vspace{0.2cm}
+\textbf{RK4 idea:} Approximate slope using weighted average of four slope estimates $k_1, k_2, k_3, k_4$ over the interval $[x_n,\; x_n+h]$.
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 1 — Plot Code: Exact Solution}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 1: Exact solution only
+plt.figure(figsize=(6, 4))
+plt.plot(x, y_ex, 'b-o', markersize=5, linewidth=2,
+         label=r'Exact: $e^x$')
+plt.title(r'Exact Solution: $dy/dx = y$')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex1_exact.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 1 — Exact Solution}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.78\textwidth]{ex1_exact.pdf}
+    \caption{Exact solution $y = e^x$ for Example~1 ($dy/dx = y$, $y(0)=1$)}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 1 — Plot Code: FD Scheme vs Exact}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 2: FD Scheme vs Exact
+plt.figure(figsize=(6, 4))
+plt.plot(x, y_ex, 'b-o',  markersize=5, linewidth=2,
+         label=r'Exact: $e^x$')
+plt.plot(x, y_fd, 'r--s', markersize=5, linewidth=1.8,
+         label='Finite Difference Scheme')
+plt.title('Example 1: Exact vs Finite Difference')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex1_fd.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 1 — FD Scheme vs Exact}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.78\textwidth]{ex1_fd.pdf}
+    \caption{Finite difference scheme (recurrence) vs exact solution $e^x$}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 1 — Plot Code: RK4 vs Exact}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 3: RK4 vs Exact
+plt.figure(figsize=(6, 4))
+plt.plot(x, y_ex,  'b-o',  markersize=5, linewidth=2,
+         label=r'Exact: $e^x$')
+plt.plot(x, y_rk,  'g--^', markersize=5, linewidth=1.8,
+         label='RK4')
+plt.title('Example 1: Exact vs RK4')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex1_rk4.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 1 — RK4 vs Exact}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.78\textwidth]{ex1_rk4.pdf}
+    \caption{RK4 numerical solution vs exact $e^x$; excellent agreement at $h=0.1$}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 1 — Plot Code: All Methods Combined}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 4: All methods combined
+plt.figure(figsize=(7, 4.5))
+plt.plot(x, y_ex,  'b-o',   markersize=5, linewidth=2,
+         label=r'Exact: $e^x$')
+plt.plot(x, y_fd,  'r--s',  markersize=5, linewidth=1.8,
+         label='Finite Difference Scheme')
+plt.plot(x, y_rk,  'g-.^',  markersize=5, linewidth=1.8,
+         label='RK4')
+plt.title(r'Example 1: All Methods ($dy/dx = y$)')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex1_combined.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 1 — All Methods Combined}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.82\textwidth]{ex1_combined.pdf}
+    \caption{All three solutions (exact, FD scheme, RK4) for $dy/dx = y$}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 1 — Plot Code: FD Scheme Error}
+
+\begin{lstlisting}[style=pythonstyle]
+# error list (computed earlier)
+error_fd = [abs(y_ex[i] - y_fd[i]) for i in range(N+1)]
+
+# Plot 5: FD Scheme Error
+plt.figure(figsize=(6, 3.5))
+plt.semilogy(x, error_fd, 'r-o', markersize=5, linewidth=1.8)
+plt.title(r'FD Scheme Error (Ex 1): $|e^x - y_{FD}|$')
+plt.xlabel('x')
+plt.ylabel('Absolute Error (log scale)')
+plt.grid(True, which='both', alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex1_err_fd.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 1 — Error: FD Scheme}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.82\textwidth]{ex1_err_fd.pdf}
+    \caption{Absolute error of the finite difference scheme (log scale). Error grows as $x$ increases but remains small, consistent with $O(h^4)$ LTE.}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 1 — Plot Code: RK4 Error}
+
+\begin{lstlisting}[style=pythonstyle]
+# error list (computed earlier)
+error_rk = [abs(y_ex[i] - y_rk[i]) for i in range(N+1)]
+
+# Plot 6: RK4 Error
+plt.figure(figsize=(6, 3.5))
+plt.semilogy(x, error_rk, 'g-^', markersize=5, linewidth=1.8)
+plt.title(r'RK4 Error (Ex 1): $|e^x - y_{RK4}|$')
+plt.xlabel('x')
+plt.ylabel('Absolute Error (log scale)')
+plt.grid(True, which='both', alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex1_err_rk4.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 1 — Error: RK4}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.82\textwidth]{ex1_err_rk4.pdf}
+    \caption{Absolute error of RK4 (log scale). RK4 also has $O(h^4)$ LTE — errors are comparable in order to the FD scheme.}
+\end{figure}
+
+\end{frame}
+
+% ================================================
+\section{Example 2: $dy/dx = -2y$}
+% ================================================
+
+\begin{frame}{Example 2 — Setup: $dy/dx = -2y$}
+
+\textbf{ODE:} $\dfrac{dy}{dx} = -2y, \quad y(0) = 1$
+
+\textbf{Exact Solution:} $y(x) = e^{-2x}$
+
+\vspace{0.3cm}
+Here $\lambda = -2$. Substituting into (9):
+
+\begin{equation}
+    A_2 = \frac{1 + \tfrac{8(-2)h}{12}}{1 - \tfrac{5(-2)h}{12}}
+         = \frac{1 - \tfrac{16h}{12}}{1 + \tfrac{10h}{12}}
+    \approx 0.8000, \qquad B_2 \approx 0.0154 \quad (h=0.1)
+\end{equation}
+
+\vspace{0.3cm}
+\textbf{Initial conditions:}
+\[
+    y_0 = 1, \qquad y_1 = e^{-2h}
+\]
+
+Note: $A_2, B_2$ are \textbf{different} from Example~1 because $\lambda$ changed.
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 2 — Python Code (FD Scheme)}
+
+\begin{lstlisting}[style=pythonstyle]
+import math, matplotlib.pyplot as plt
+
+h = 0.1;  N = 20
+
+x     = [i*h for i in range(N+1)]
+y_ex  = [math.exp(-2*xi) for xi in x]       # exact: e^{-2x}
+
+# FD scheme constants (lambda = -2)
+A = (1 - 16*h/12) / (1 + 10*h/12)
+B = ( 2*h/12)     / (1 + 10*h/12)
+
+# initial conditions
+y_fd = [1.0, math.exp(-2*h)] + [0.0]*(N-1)
+
+for n in range(1, N):
+    y_fd[n+1] = A * y_fd[n] + B * y_fd[n-1]
+
+error = [abs(y_ex[i] - y_fd[i]) for i in range(N+1)]
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 2 — Python Code (RK4)}
+
+\begin{lstlisting}[style=pythonstyle]
+def f(x, y): return -2 * y    # dy/dx = -2y
+
+y_rk = [1.0] + [0.0]*N        # y(0) = 1
+
+for n in range(N):
+    xi, yi = x[n], y_rk[n]
+    k1 = f(xi,       yi)
+    k2 = f(xi + h/2, yi + h/2 * k1)
+    k3 = f(xi + h/2, yi + h/2 * k2)
+    k4 = f(xi + h,   yi + h   * k3)
+    y_rk[n+1] = yi + (h/6) * (k1 + 2*k2 + 2*k3 + k4)
+
+err_rk = [abs(y_ex[i] - y_rk[i]) for i in range(N+1)]
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 2 — Plot Code: Exact Solution}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 1: Exact solution only
+plt.figure(figsize=(6, 4))
+plt.plot(x, y_ex, 'b-o', markersize=5, linewidth=2,
+         label=r'Exact: $e^{-2x}$')
+plt.title(r'Exact Solution: $dy/dx = -2y$')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex2_exact.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 2 — Exact Solution}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.78\textwidth]{ex2_exact.pdf}
+    \caption{Exact solution $y = e^{-2x}$: exponential decay from $y(0)=1$ toward zero.}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 2 — Plot Code: FD Scheme vs Exact}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 2: FD Scheme vs Exact
+plt.figure(figsize=(6, 4))
+plt.plot(x, y_ex, 'b-o',  markersize=5, linewidth=2,
+         label=r'Exact: $e^{-2x}$')
+plt.plot(x, y_fd, 'r--s', markersize=5, linewidth=1.8,
+         label='Finite Difference Scheme')
+plt.title('Example 2: Exact vs Finite Difference')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex2_fd.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 2 — FD Scheme vs Exact}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.78\textwidth]{ex2_fd.pdf}
+    \caption{Finite difference scheme vs exact $e^{-2x}$; scheme closely tracks the decaying solution.}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 2 — Plot Code: RK4 vs Exact}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 3: RK4 vs Exact
+plt.figure(figsize=(6, 4))
+plt.plot(x, y_ex,  'b-o',  markersize=5, linewidth=2,
+         label=r'Exact: $e^{-2x}$')
+plt.plot(x, y_rk,  'g--^', markersize=5, linewidth=1.8,
+         label='RK4')
+plt.title('Example 2: Exact vs RK4')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex2_rk4.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 2 — RK4 vs Exact}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.78\textwidth]{ex2_rk4.pdf}
+    \caption{RK4 vs exact $e^{-2x}$; RK4 tracks the decay with very high accuracy.}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 2 — Plot Code: All Methods Combined}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 4: All methods combined
+plt.figure(figsize=(7, 4.5))
+plt.plot(x, y_ex,  'b-o',   markersize=5, linewidth=2,
+         label=r'Exact: $e^{-2x}$')
+plt.plot(x, y_fd,  'r--s',  markersize=5, linewidth=1.8,
+         label='Finite Difference Scheme')
+plt.plot(x, y_rk,  'g-.^',  markersize=5, linewidth=1.8,
+         label='RK4')
+plt.title(r'Example 2: All Methods ($dy/dx = -2y$)')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex2_combined.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 2 — All Methods Combined}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.82\textwidth]{ex2_combined.pdf}
+    \caption{All three solutions for $dy/dx = -2y$: exact, FD scheme, and RK4.}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 2 — Plot Code: FD Scheme Error}
+
+\begin{lstlisting}[style=pythonstyle]
+# error list (computed earlier)
+error_fd = [abs(y_ex[i] - y_fd[i]) for i in range(N+1)]
+
+# Plot 5: FD Scheme Error
+plt.figure(figsize=(6, 3.5))
+plt.semilogy(x, error_fd, 'r-o', markersize=5, linewidth=1.8)
+plt.title(r'FD Scheme Error (Ex 2): $|e^{-2x} - y_{FD}|$')
+plt.xlabel('x')
+plt.ylabel('Absolute Error (log scale)')
+plt.grid(True, which='both', alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex2_err_fd.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 2 — Error: FD Scheme}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.82\textwidth]{ex2_err_fd.pdf}
+    \caption{FD scheme error for $e^{-2x}$ (log scale). Error stays very small, validating the $O(h^4)$ local truncation error.}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Example 2 — Plot Code: RK4 Error}
+
+\begin{lstlisting}[style=pythonstyle]
+# error list (computed earlier)
+error_rk = [abs(y_ex[i] - y_rk[i]) for i in range(N+1)]
+
+# Plot 6: RK4 Error
+plt.figure(figsize=(6, 3.5))
+plt.semilogy(x, error_rk, 'g-^', markersize=5, linewidth=1.8)
+plt.title(r'RK4 Error (Ex 2): $|e^{-2x} - y_{RK4}|$')
+plt.xlabel('x')
+plt.ylabel('Absolute Error (log scale)')
+plt.grid(True, which='both', alpha=0.4)
+plt.tight_layout()
+plt.savefig('ex2_err_rk4.pdf')
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Example 2 — Error: RK4}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.82\textwidth]{ex2_err_rk4.pdf}
+    \caption{RK4 error for $e^{-2x}$ (log scale). RK4 achieves even lower error due to its carefully balanced slope estimates.}
+\end{figure}
+
+\end{frame}
+
+% ================================================
+\section{RK4 Method — Theory}
+% ================================================
+
+\begin{frame}{RK4 Method — What is it?}
+
+The \textbf{4th-order Runge-Kutta (RK4)} method solves $\dfrac{dy}{dx} = f(x,y)$ by computing four slope estimates per step:
+
+\begin{equation}
+    k_1 = f(x_n,\; y_n)
+\end{equation}
+\begin{equation}
+    k_2 = f\!\left(x_n + \tfrac{h}{2},\; y_n + \tfrac{h}{2}k_1\right)
+\end{equation}
+\begin{equation}
+    k_3 = f\!\left(x_n + \tfrac{h}{2},\; y_n + \tfrac{h}{2}k_2\right)
+\end{equation}
+\begin{equation}
+    k_4 = f\!\left(x_n + h,\; y_n + h\,k_3\right)
+\end{equation}
+\begin{equation}
+    \boxed{y_{n+1} = y_n + \frac{h}{6}\!\left(k_1 + 2k_2 + 2k_3 + k_4\right)}
+\end{equation}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{RK4 — Why $O(h^4)$?}
+
+The Taylor expansion of the exact solution is:
+\[
+    y(x+h) = y + h y' + \frac{h^2}{2}y'' + \frac{h^3}{6}y''' + \frac{h^4}{24}y^{(4)} + \cdots
+\]
+
+RK4 matches \textbf{all four terms} exactly through clever weighted averaging:
+
+\vspace{0.3cm}
+\begin{tabular}{ll}
+    \toprule
+    Slope & Evaluation point \\
+    \midrule
+    $k_1$ & Left endpoint: $x_n$ \\
+    $k_2$ & Midpoint using $k_1$ \\
+    $k_3$ & Midpoint using $k_2$ (corrected) \\
+    $k_4$ & Right endpoint using $k_3$ \\
+    \bottomrule
+\end{tabular}
+
+\vspace{0.3cm}
+Local truncation error of RK4:
+\begin{equation}
+    \text{LTE}_{RK4} = O(h^5) \quad \Rightarrow \quad \text{Global error} = O(h^4)
+\end{equation}
+
+\end{frame}
+
+% ================================================
+\section{Comparison \& Conclusion}
+% ================================================
+
+\begin{frame}{Method Comparison}
+
+\begin{center}
+\begin{tabular}{lccc}
+    \toprule
+    \textbf{Property} & \textbf{Given Scheme} & \textbf{RK4} \\
+    \midrule
+    Type & Multistep & Single-step \\
+    Values needed & $y_n, y_{n-1}$ & $y_n$ only \\
+    LTE & $O(h^4)$ & $O(h^5)$ \\
+    Global error & $O(h^3)$ & $O(h^4)$ \\
+    Startup & Needs $y_1$ separately & Only needs $y_0$ \\
+    ODE-dependency & $A, B$ depend on $\lambda$ & Only $f(x,y)$ \\
+    Implicit & Yes (for implicit ODEs) & No \\
+    \bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.3cm}
+Both methods are high-order, but RK4 has lower error per step.
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Summary and Conclusion}
+
+\begin{itemize}
+    \item The scheme $y_{n+1} = y_n + \dfrac{h}{12}(5y_{n+1} + 8y_n - y_{n-1})$ matches the exact Taylor expansion up to and including the $h^3$ term
+
+    \vspace{0.2cm}
+    \item The first deviation appears at $O(h^4)$ $\Rightarrow$ \textbf{LTE = $O(h^4)$}
+
+    \vspace{0.2cm}
+    \item Z-transform converts the recurrence to an algebraic equation, giving the general solution via the characteristic equation $z^2 - Az - B = 0$
+
+    \vspace{0.2cm}
+    \item Numerical tests on both $dy/dx = y$ and $dy/dx = -2y$ confirm: errors are small and consistent with $O(h^4)$
+
+    \vspace{0.2cm}
+    \item RK4, also $O(h^4)$ globally, gives comparable accuracy
+\end{itemize}
+
+\vspace{0.3cm}
+\begin{alertblock}{Final Answer}
+\[
+    \boxed{\text{Local Truncation Error} = O(h^4)}
+    \qquad \textbf{Option (d)}
+\]
+\end{alertblock}
+
+\end{frame}
+
+% ================================================
+\section{Direct Recurrence Plot of $y_n$}
+% ================================================
+
+\begin{frame}{Plotting $y_n$ Directly from the Recurrence}
+
+Given:
+\[
+    y_{n+1} = A\,y_n + B\,y_{n-1}, \qquad
+    A = \frac{1 + \tfrac{8h}{12}}{1 - \tfrac{5h}{12}}, \quad
+    B = \frac{-\tfrac{h}{12}}{1 - \tfrac{5h}{12}}
+\]
+
+\vspace{0.3cm}
+\textbf{Chosen initial conditions and step size:}
+\[
+    y_0 = 1, \qquad y_1 = 1.1, \qquad h = 0.1
+\]
+
+\vspace{0.2cm}
+$y_1 = 1.1$ is \textbf{not} the exact $e^{0.1} \approx 1.10517$ — this deliberate small
+difference lets us observe how an initial error propagates through the recurrence.
+
+\vspace{0.3cm}
+\textbf{We then:}
+\begin{itemize}
+    \item Plot the computed $y_n$ sequence
+    \item Compare with exact $e^{x_n}$
+    \item Show absolute error $|e^{x_n} - y_n|$
+\end{itemize}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Python Code: Computing $y_n$}
+
+\begin{lstlisting}[style=pythonstyle]
+import math
+import matplotlib.pyplot as plt
+
+h = 0.1;   N = 20
+
+# recurrence constants (dy/dx = y, lambda = 1)
+A = (1 + 8*h/12) / (1 - 5*h/12)
+B = (-h/12)      / (1 - 5*h/12)
+
+# chosen initial conditions
+y0, y1 = 1.0, 1.1          # y1=1.1, not exact e^h
+
+x    = [i * h for i in range(N + 1)]
+y_fd = [y0, y1] + [0.0] * (N - 1)
+
+for n in range(1, N):
+    y_fd[n + 1] = A * y_fd[n] + B * y_fd[n - 1]
+
+y_ex  = [math.exp(xi) for xi in x]
+error = [abs(y_ex[i] - y_fd[i]) for i in range(N + 1)]
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Python Code: Plot $y_n$ Sequence}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 1: yn sequence only
+plt.figure(figsize=(6, 4))
+plt.plot(x, y_fd, 'r-o', markersize=5, linewidth=2,
+         label=r'$y_n$ (Recurrence)')
+plt.title(r'$y_n$ from Recurrence: $y_0=1,\ y_1=1.1,\ h=0.1$')
+plt.xlabel(r'$x_n = nh$')
+plt.ylabel(r'$y_n$')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{$y_n$ Sequence from Recurrence}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.80\textwidth]{yn_sequence.pdf}
+    \caption{$y_n$ computed by stepping the recurrence with $y_0=1$, $y_1=1.1$, $h=0.1$.
+    Grows exponentially, consistent with $y = e^x$.}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Python Code: $y_n$ vs Exact $e^x$}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 2: yn vs exact
+plt.figure(figsize=(6, 4))
+plt.plot(x, y_ex, 'b-o',  markersize=5, linewidth=2,
+         label=r'Exact: $e^x$')
+plt.plot(x, y_fd, 'r--s', markersize=5, linewidth=1.8,
+         label=r'$y_n$ (Recurrence, $y_1=1.1$)')
+plt.title(r'$y_n$ vs Exact $e^x$  ($y_0=1,\ y_1=1.1,\ h=0.1$)')
+plt.xlabel(r'$x_n = nh$')
+plt.ylabel(r'$y_n$')
+plt.legend()
+plt.grid(True, alpha=0.4)
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{$y_n$ vs Exact $e^x$}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.80\textwidth]{yn_vs_exact.pdf}
+    \caption{$y_n$ vs exact $e^{x_n}$. The visible gap comes from $y_1=1.1$
+    instead of the exact $e^h \approx 1.10517$.}
+\end{figure}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}[fragile]{Python Code: Error Plot}
+
+\begin{lstlisting}[style=pythonstyle]
+# Plot 3: absolute error
+plt.figure(figsize=(6, 3.5))
+plt.semilogy(x, error, 'k-o', markersize=5, linewidth=1.8)
+plt.title(r'Error $|e^{x_n} - y_n|$  ($y_0=1,\ y_1=1.1,\ h=0.1$)')
+plt.xlabel(r'$x_n = nh$')
+plt.ylabel('Absolute Error (log scale)')
+plt.grid(True, which='both', alpha=0.4)
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Error: $|e^{x_n} - y_n|$}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.80\textwidth]{yn_error.pdf}
+    \caption{Error $|e^{x_n} - y_n|$ on log scale. Starts at $\approx 0.005$
+    (from $y_1$ mismatch) and grows slowly — confirming the scheme's high accuracy.}
+\end{figure}
+
+\end{frame}
+
+
+\end{document}

@@ -1,0 +1,7 @@
+\beamer@sectionintoc {1}{Question \& Local Truncation Error}{3}{0}{1}
+\beamer@sectionintoc {2}{Z-Transform Analysis}{8}{0}{2}
+\beamer@sectionintoc {3}{Example 1: $dy/dx = y$}{12}{0}{3}
+\beamer@sectionintoc {4}{Example 2: $dy/dx = -2y$}{27}{0}{4}
+\beamer@sectionintoc {5}{RK4 Method — Theory}{42}{0}{5}
+\beamer@sectionintoc {6}{Comparison \& Conclusion}{44}{0}{6}
+\beamer@sectionintoc {7}{Direct Recurrence Plot of $y_n$}{46}{0}{7}
